@@ -34,22 +34,13 @@ import { CustomerController } from './presentation/controllers/customer.controll
       isGlobal: true,
       load: [configuration],
     }),
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('database.host'),
-        port: configService.get('database.port'),
-        username: configService.get('database.username'),
-        password: configService.get('database.password'),
-        database: configService.get('database.name'),
-        entities: [CompanyEntity, CustomerEntity, ProductEntity, NFeEntity, NFSeEntity],
-        synchronize: process.env.NODE_ENV === 'development',
-        logging: process.env.NODE_ENV === 'development',
-        retryAttempts: 3,
-        retryDelay: 3000,
-        autoLoadEntities: true,
-      }),
+    TypeOrmModule.forRoot({
+      type: 'sqlite',
+      database: ':memory:',
+      entities: [CompanyEntity, CustomerEntity, ProductEntity, NFeEntity, NFSeEntity],
+      synchronize: true,
+      logging: false,
+      autoLoadEntities: true,
     }),
     TypeOrmModule.forFeature([
       CompanyEntity,
@@ -75,4 +66,4 @@ import { CustomerController } from './presentation/controllers/customer.controll
     CreateCustomerUseCase,
   ],
 })
-export class AppModule {}
+export class AppSqliteModule {}

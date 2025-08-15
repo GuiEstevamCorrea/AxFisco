@@ -17,11 +17,26 @@ export class CustomerEntity {
   @Column()
   document: string;
 
+  @Column({ name: 'document_type' })
+  documentType: string;
+
   @Column({ name: 'customer_type' })
   customerType: string;
 
   @Column({ name: 'state_registration', nullable: true })
   stateRegistration?: string;
+
+  @Column({ name: 'municipal_registration', nullable: true })
+  municipalRegistration?: string;
+
+  @Column({ name: 'indicador_ie', default: 9 })
+  indicadorIE: number;
+
+  @Column({ nullable: true })
+  suframa?: string;
+
+  @Column({ type: 'text', nullable: true })
+  observacoes?: string;
 
   // Address fields
   @Column({ nullable: true })
@@ -47,6 +62,12 @@ export class CustomerEntity {
 
   @Column({ default: 'Brasil', nullable: true })
   country?: string;
+
+  @Column({ name: 'codigo_ibge', nullable: true })
+  codigoIbge?: string;
+
+  @Column({ name: 'codigo_pais', nullable: true })
+  codigoPais?: string;
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;

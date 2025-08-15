@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { UseCase } from '../ports/use-case.interface';
 import { CustomerRepository } from '@domain/repositories/customer.repository';
-import { Customer, CustomerType } from '@domain/entities/customer.entity';
+import { Customer, CustomerType, IndicadorIE } from '@domain/entities/customer.entity';
 import { CNPJ } from '@domain/value-objects/cnpj.vo';
 import { CPF } from '@domain/value-objects/cpf.vo';
 import { Address } from '@domain/value-objects/address.vo';
@@ -52,6 +52,7 @@ export class CreateCustomerUseCase implements UseCase<CreateCustomerDto, Custome
       input.email,
       document,
       input.customerType,
+      input.customerType === CustomerType.LEGAL_ENTITY ? IndicadorIE.CONTRIBUINTE : IndicadorIE.NAO_CONTRIBUINTE,
       input.phone,
       address,
       input.stateRegistration,

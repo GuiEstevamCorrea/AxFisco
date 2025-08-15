@@ -41,6 +41,7 @@
     "redis": "^4.6.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
+    "sqlite3": "^5.1.7",
     "typeorm": "^0.3.25",
     "uuid": "^9.0.0",
     "xml2js": "^0.6.2"
@@ -87,7 +88,10 @@
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
-    "moduleNameMapping": {
+    "modulePathIgnorePatterns": [
+      "node_modules"
+    ],
+    "moduleNameMapper": {
       "@domain/(.*)": "<rootDir>/src/domain/$1",
       "@application/(.*)": "<rootDir>/src/application/$1",
       "@infrastructure/(.*)": "<rootDir>/src/infrastructure/$1",
