@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: axfisco-app-dev
+    ports:
+      - "3000:3000"
+      - "9229:9229" # Debug port
+    environment:
+      - NODE_ENV=development
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USERNAME=axfisco
+      - DATABASE_PASSWORD=axfisco123
+      - DATABASE_NAME=axfisco_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run start:dev
+    networks:
+      - axfisco-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: axfisco-postgres-dev
+    environment:
+      - POSTGRES_USER=axfisco
+      - POSTGRES_PASSWORD=axfisco123
+      - POSTGRES_DB=axfisco_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - axfisco-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: axfisco-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - axfisco-network
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: axfisco-rabbitmq-dev
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_dev_data:/var/lib/rabbitmq
+    networks:
+      - axfisco-network
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+  rabbitmq_dev_data:
+
+networks:
+  axfisco-network:
+    driver: bridge

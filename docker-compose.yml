@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  # Aplicação NestJS
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: axfisco-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=5432
+      - DATABASE_USERNAME=axfisco
+      - DATABASE_PASSWORD=axfisco123
+      - DATABASE_NAME=axfisco_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - RABBITMQ_URL=amqp://admin:admin123@rabbitmq:5672
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - axfisco-network
+
+  # PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: axfisco-postgres
+    environment:
+      - POSTGRES_USER=axfisco
+      - POSTGRES_PASSWORD=axfisco123
+      - POSTGRES_DB=axfisco_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - axfisco-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: axfisco-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - axfisco-network
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: axfisco-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin123
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - axfisco-network
+
+  # PgAdmin (opcional para desenvolvimento)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: axfisco-pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@axfisco.com
+      - PGADMIN_DEFAULT_PASSWORD=admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - axfisco-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:
+
+networks:
+  axfisco-network:
+    driver: bridge
